@@ -1,0 +1,2 @@
+# calendarProject
+The program allows the user to add, remove, and print appointments that he or she has. It organizes the user’s appointments in chronological order and allows the user to print out all of his appointments for a specific day or month, as well as his entire schedule. It formats the user’s appointments in a readable style, displaying the description, date, starting time, and ending time for each appointment the user has. The program is meant to help the user keep track of future events.
