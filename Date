@@ -1,0 +1,55 @@
+package calendarProject;
+
+public class Date 
+{
+	// private instance variables
+	private String desc;
+	private String date; 
+	private String startTime;
+	private String endTime;
+
+	public Date (String d, String da, String start, String end)
+	{
+		desc = d; 
+		date = da;
+		startTime = start;
+		endTime = end;
+	}
+
+	// returns Date description
+	public String returnDesc ()
+	{
+		return desc;
+	}
+
+	// returns Date's date
+	public String returnDate ()
+	{
+		return date;
+	}
+
+	// returns Date start Time
+	public String returnStart ()
+	{
+		return startTime;
+	}
+
+	// returns Date end Time
+	public String endTime ()
+	{
+		return endTime;
+	}
+
+	public String toString()
+	{
+		// format calendar for printout (centers the description)
+		String descFormat = desc;
+		for(int i = 0; i < 16 - (desc.length()/2); i++)
+			descFormat = " " + descFormat;
+		while (descFormat.length() < 34) 
+			descFormat += " ";
+
+		// print format of Date objects
+		return "  " + descFormat + date + "\t    " + startTime + "\t    " + endTime;
+	}
+}
