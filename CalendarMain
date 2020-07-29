@@ -1,0 +1,610 @@
+package calendarProject;
+
+import java.util.Scanner;
+
+public class CalendarMain 
+{
+	public static void main(String[] args) 
+	{
+		// declare variables
+		String choice;
+		String printChoice;
+		String dateChoice;
+		String addedDate;
+		String addedStartTime;
+		String addedEndTime;
+		String removeDesc;
+		boolean endProgram = true;
+
+		// create Scanner and AppointmentCalendar object
+		Scanner input = new Scanner(System.in);
+		AppointmentCalendar calendar = new AppointmentCalendar();
+
+		// print directions
+		directions();
+
+		do
+		{
+			// get user input for desired function
+			System.out.println("\n\n\n<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
+			System.out.println("\nWhat would you like to do? (print, add, remove, directions, end)");
+			System.out.print("Enter: ");
+			choice = input.nextLine().toLowerCase();
+			System.out.println();
+
+			// check if input is valid
+			while(!choice.equals("print") && !choice.equals("add") && !choice.equals("remove") && !choice.equals("directions") && !choice.equals("end"))
+			{
+				System.out.println("Invalid function. Only functions are: \"print\", \"add\", \"remove\", \"directions\", \"end\"");
+				System.out.print("Re-Enter: ");
+				choice = input.nextLine().toLowerCase();
+				System.out.println();
+			}
+
+			// prints schedule (depends on user input)
+			if(choice.equals("print"))
+			{
+				// gets and checks user input for specific print function
+				System.out.println("Would you like to print your Daily, Monthly, or Entire Schedule? (Enter \"day\", \"month\", or \"entire\")");
+				System.out.print("Enter: ");
+				printChoice = input.nextLine().toLowerCase();
+				System.out.println();
+				while(!printChoice.equals("day") && !printChoice.equals("month") && !printChoice.equals("entire"))
+				{
+					System.out.println("Invalid function. Only functions are: \"day\", \"month\", \"entire\"");
+					System.out.print("Re-Enter: ");
+					printChoice = input.nextLine().toLowerCase();
+					System.out.println();
+				}
+
+				// prints entire schedule with call to AppointmentCalendar method (depends on user input)
+				if(printChoice.equals("entire"))
+				{
+					calendar.printEntireSched();
+				}
+
+				// prints monthly schedule (depends on user input)
+				else if(printChoice.equals("month"))
+				{
+					// obtains & checks month and year of user input
+					System.out.println("Please enter the desired month and year (In the format \"mm/yyyy\")");
+					System.out.print("Enter: ");
+					dateChoice = input.nextLine();
+					while(dateChoice.length() != 7 || checkIntParse(dateChoice.substring(0,2)) == null || checkIntParse(dateChoice.substring(3)) == null || checkIntParse(dateChoice.substring(0,2)) < 1 || checkIntParse(dateChoice.substring(0,2)) > 12)
+					{
+						if(dateChoice.length() != 7 || checkIntParse(dateChoice.substring(0,2)) == null || checkIntParse(dateChoice.substring(3)) == null)
+						{
+							System.out.println("Invalid function. Desired month and year must be entered in the format: \"mm/yyyy\" (ex: \"04/2001\" for April, 2001)");
+							System.out.print("Re-Enter: ");
+							dateChoice = input.nextLine();
+							System.out.println();
+						}
+						else
+						{
+							System.out.println("Invalid input. Date must be entered as \"mm/yyyy\". Months must be numbers 1 - 12.");
+							System.out.print("Re-Enter: ");
+							dateChoice = input.nextLine();
+							System.out.println();
+						}
+
+					}				
+
+					// call AppointmentCalendar method to print monthly schedule
+					calendar.printMonthSched(dateChoice.substring(0,2), dateChoice.substring(3));
+				}
+
+				// prints a day's schedule (depends on user input)
+				else if(printChoice.equals("day"))
+				{
+					// obtain & check the full date that user inputed
+					System.out.print("Enter the desired month/day/year (In the format \"mm/dd/yyyy\"): ");
+					dateChoice = input.nextLine();
+					while(dateChoice.length() != 10 || checkIntParse(dateChoice.substring(0,2)) == null || checkIntParse(dateChoice.substring(3,5)) == null || checkIntParse(dateChoice.substring(6)) == null || checkIntParse(dateChoice.substring(0,2)) < 1 || checkIntParse(dateChoice.substring(0,2)) > 12 || checkIntParse(dateChoice.substring(3,5)) < 1 || checkIntParse(dateChoice.substring(3,5)) > 31)
+					{
+						if (dateChoice.length() != 10 || checkIntParse(dateChoice.substring(0,2)) == null || checkIntParse(dateChoice.substring(3,5)) == null || checkIntParse(dateChoice.substring(6)) == null)
+						{
+							System.out.println("Invalid function. Desired month, day, and year must be entered in the format: \"mm/dd/yyyy\" (ex: \"04/13/2001\" for April 13, 2001)");
+							System.out.print("Re-Enter: ");
+							dateChoice = input.nextLine();
+							System.out.println();
+						}
+						else
+						{
+							System.out.println("Invalid input. Date must be entered as \"mm/dd/yyyy\". Months must be numbers 1 - 12 and days must be 1 - 31.");
+							System.out.print("Re-Enter: ");
+							dateChoice = input.nextLine();
+							System.out.println();
+						}
+					}
+
+					// call AppointmentCalendar method to print daily schedule
+					calendar.printDaySched(dateChoice);
+				}
+			}
+
+			// adds an appointment (depends on user input)
+			else if (choice.equals("add"))
+			{
+				// get and check user input for description
+				System.out.print("Enter appointment description (Max 30 characters): ");
+				String addedDesc = input.nextLine();
+				while(addedDesc.length() > 30)
+				{
+					System.out.println("Invalid input. Description must be under 30 characters, including spaces.");
+					System.out.print("Re-Enter: ");
+					addedDesc = input.nextLine();
+					System.out.println();
+				}
+
+				// get and check user input for date
+				System.out.print("Enter appointment date (In the format \"mm/dd/yyyy\" for month, day, year): ");
+				addedDate = input.nextLine();
+				while(addedDate.length() != 10 || checkIntParse(addedDate.substring(0,2)) == null || checkIntParse(addedDate.substring(3,5)) == null || checkIntParse(addedDate.substring(6)) == null || checkIntParse(addedDate.substring(0,2)) < 1 || checkIntParse(addedDate.substring(0,2)) > 12 || checkIntParse(addedDate.substring(3,5)) < 1 || checkIntParse(addedDate.substring(3,5)) > 31)
+				{
+					if (addedDate.length() != 10 || checkIntParse(addedDate.substring(0,2)) == null || checkIntParse(addedDate.substring(3,5)) == null || checkIntParse(addedDate.substring(6)) == null)
+					{
+						System.out.println("Invalid input. Date must be entered as \"mm/dd/yyyy\" (ex: 10/12/2002)");
+						System.out.print("Re-Enter: ");
+						addedDate = input.nextLine();
+						System.out.println();
+					}
+					else
+					{
+						System.out.println("Invalid input. Date must be entered as \"mm/dd/yyyy\". Months must be numbers 1 - 12 and days must be 1 - 31.");
+						System.out.print("Re-Enter: ");
+						addedDate = input.nextLine();
+						System.out.println();
+					}
+				}
+
+				// get & check user input for start & end times
+				System.out.print("Enter appointment start time, in hour/minute of day (In format \"hr:mm\"): ");
+				addedStartTime = input.nextLine();
+				while (addedStartTime.length() > 8)
+				{
+					System.out.println("The start time you enter can not exceed 8 numbers/characters");
+					System.out.print("Re-enter: ");
+					addedStartTime = input.nextLine();
+				}
+				System.out.print("Enter appointment end time, in hour/minute of day (In format \"hr:mm\"): ");
+				addedEndTime = input.nextLine();
+				while (addedEndTime.length() > 8)
+				{
+					System.out.println("The end time you enter can not exceed 8 numbers/characters");
+					System.out.print("Re-enter: ");
+					addedEndTime = input.nextLine();
+				}
+
+				// call AppointmentCalendar method to add date
+				calendar.addDate(addedDesc, addedDate, addedStartTime, addedEndTime);
+			}
+
+			// removes appointment (depends on user input)
+			else if (choice.equals("remove"))
+			{
+				// gets user input
+				System.out.print("Enter the Description of appointment you want to remove: ");
+				removeDesc = input.nextLine();
+
+				// checks if two Dates have same description; if yes, asks user to specify date of desired appointment
+				if(!calendar.repeatedDescPresent(removeDesc))
+				{
+					// calls AppointmentCalendar method to remove date
+					calendar.removeDate(removeDesc);
+				}
+				else
+				{
+					// obtains and checks date from user input, then removes date
+					System.out.println("It appears you have 2 or more appointments with the same description.");
+					System.out.print("Enter the date of the appointment you want to remove (In the format \"mm/dd/yyyy\"): ");
+					dateChoice = input.nextLine();
+					while(dateChoice.length() != 10 || checkIntParse(dateChoice.substring(0,2)) == null || checkIntParse(dateChoice.substring(3,5)) == null || checkIntParse(dateChoice.substring(6)) == null)
+					{
+						System.out.println("Invalid input. Date must be entered as \"mm/dd/yyyy\" (ex: 10/12/2002)");
+						System.out.print("Re-Enter: ");
+						dateChoice = input.nextLine();
+						System.out.println();
+					}
+
+					calendar.removeDate(removeDesc, dateChoice);
+				}
+			}
+
+			// reprint directions (depends on user input)
+			else if (choice.equals("directions"))
+			{
+				directions();
+			}
+
+			// end the program (depends on user input)
+			else if (choice.equals("end"))
+			{
+				endProgram = false;
+			}
+		} while(endProgram); 
+
+		System.out.println("\n~~~ Program ended ~~~");
+	}
+
+	// print directions of program
+	public static void directions()
+	{
+		System.out.println("------------------------------------------------------------------------------------");
+		System.out.println("Welcome to Your Appointment Calendar!\n");
+		System.out.println("Available functions for you to use include:");
+		System.out.println("\t1) Print your appointments (For one particular day, month, or all appointments you have)");
+		System.out.println("\t\t* To print appointments, Enter: \"print\"");
+		System.out.println("\t2) Add appointment");
+		System.out.println("\t\t* To add appointment, Enter: \"add\"");
+		System.out.println("\t3) Remove appointment");
+		System.out.println("\t\t* To remove appointment, Enter: \"remove\"");
+		System.out.println("\t4) Reread Directions");
+		System.out.println("\t\t* To reread directions, Enter: \"directions\"");
+		System.out.println("\t5) End Program");
+		System.out.println("\t\t* To end program, Enter: \"end\"");
+		System.out.println("------------------------------------------------------------------------------------");
+	}
+
+	// checks inputed date String to see if it is able to be converted to numbers
+	public static Integer checkIntParse(String date) 
+	{
+		try 
+		{
+			return Integer.parseInt(date);
+		} 
+		catch (NumberFormatException n) 
+		{
+			return null;
+		}
+	}
+}
+/*
+------------------------------------------------------------------------------------
+Welcome to Your Appointment Calendar!
+
+Available functions for you to use include:
+	1) Print your appointments (For one particular day, month, or all appointments you have)
+		* To print appointments, Enter: "print"
+	2) Add appointment
+		* To add appointment, Enter: "add"
+	3) Remove appointment
+		* To remove appointment, Enter: "remove"
+	4) Reread Directions
+		* To reread directions, Enter: "directions"
+	5) End Program
+		* To end program, Enter: "end"
+------------------------------------------------------------------------------------
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: add
+
+Enter appointment description (Max 30 characters): Doctor's Appointment
+Enter appointment date (In the format "mm/dd/yyyy" for month, day, year): 09/12/2019
+Enter appointment start time, in hour/minute of day (In format "hr:mm"): 7:00 PM
+Enter appointment end time, in hour/minute of day (In format "hr:mm"): 8:30 PM
+
+~~~ Appointment successfully added ~~~
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: add
+
+Enter appointment description (Max 30 characters): Nick's Birthday
+Enter appointment date (In the format "mm/dd/yyyy" for month, day, year): 09/17/2019
+Enter appointment start time, in hour/minute of day (In format "hr:mm"): 10:00 AM
+Enter appointment end time, in hour/minute of day (In format "hr:mm"): 11:59 PM
+
+~~~ Appointment successfully added ~~~
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: add
+
+Enter appointment description (Max 30 characters): Grandpa Visits
+Enter appointment date (In the format "mm/dd/yyyy" for month, day, year): 04/10/2018
+Enter appointment start time, in hour/minute of day (In format "hr:mm"): 6:45 PM
+Enter appointment end time, in hour/minute of day (In format "hr:mm"): 9:00 PM
+
+~~~ Appointment successfully added ~~~
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: add
+
+Enter appointment description (Max 30 characters): School Club Meeting
+Enter appointment date (In the format "mm/dd/yyyy" for month, day, year): 09/24/2019
+Enter appointment start time, in hour/minute of day (In format "hr:mm"): 2:30 PM
+Enter appointment end time, in hour/minute of day (In format "hr:mm"): 3:00 PM
+
+~~~ Appointment successfully added ~~~
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: add
+
+Enter appointment description (Max 30 characters): Dad's Birthday
+Enter appointment date (In the format "mm/dd/yyyy" for month, day, year): 09/12/2019
+Enter appointment start time, in hour/minute of day (In format "hr:mm"): 7:00 AM
+Enter appointment end time, in hour/minute of day (In format "hr:mm"): 11:59 PM
+
+~~~ Appointment successfully added ~~~
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: add
+
+Enter appointment description (Max 30 characters): Doctor's Appointment
+Enter appointment date (In the format "mm/dd/yyyy" for month, day, year): 01/07/2017
+Enter appointment start time, in hour/minute of day (In format "hr:mm"): 7:00 PM
+Enter appointment end time, in hour/minute of day (In format "hr:mm"): 8:00 PM
+
+~~~ Appointment successfully added ~~~
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: print
+
+Would you like to print your Daily, Monthly, or Entire Schedule? (Enter "day", "month", or "entire")
+Enter: entire
+
+
+------------------------------------------------------------------------------------
+All of Your Upcoming Appointments:
+
+	    =============	     ========	 ============    ==============
+	     DESCRIPTION	       DATE	  START TIME        END TIME
+	    =============	     ========	 ============    ==============
+        Doctor's Appointment        01/07/2017	    7:00 PM	    8:00 PM
+           Grandpa Visits           04/10/2018	    6:45 PM	    9:00 PM
+           Dad's Birthday           09/12/2019	    7:00 AM	    11:59 PM
+        Doctor's Appointment        09/12/2019	    7:00 PM	    8:30 PM
+           Nick's Birthday          09/17/2019	    10:00 AM	    11:59 PM
+         School Club Meeting        09/24/2019	    2:30 PM	    3:00 PM
+
+
+------------------------------------------------------------------------------------
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: remove
+
+Enter the Description of appointment you want to remove: Nick's Birthday
+
+~~~Appointment successfully removed~~~
+
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: print
+
+Would you like to print your Daily, Monthly, or Entire Schedule? (Enter "day", "month", or "entire")
+Enter: entire
+
+
+------------------------------------------------------------------------------------
+All of Your Upcoming Appointments:
+
+	    =============	     ========	 ============    ==============
+	     DESCRIPTION	       DATE	  START TIME        END TIME
+	    =============	     ========	 ============    ==============
+        Doctor's Appointment        01/07/2017	    7:00 PM	    8:00 PM
+           Grandpa Visits           04/10/2018	    6:45 PM	    9:00 PM
+           Dad's Birthday           09/12/2019	    7:00 AM	    11:59 PM
+        Doctor's Appointment        09/12/2019	    7:00 PM	    8:30 PM
+         School Club Meeting        09/24/2019	    2:30 PM	    3:00 PM
+
+
+------------------------------------------------------------------------------------
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: remove
+
+Enter the Description of appointment you want to remove: Sally's Bday
+
+~~~Appointment not found~~~
+(If you do not know what appointments you have, use the function "print" and then "entire" to print entire schedule!)
+
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: remove
+
+Enter the Description of appointment you want to remove: Doctor's Appointment
+It appears you have 2 or more appointments with the same description.
+Enter the date of the appointment you want to remove (In the format "mm/dd/yyyy"): 01/07/2017
+
+~~~Appointment successfully removed~~~
+
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: print
+
+Would you like to print your Daily, Monthly, or Entire Schedule? (Enter "day", "month", or "entire")
+Enter: entire
+
+
+------------------------------------------------------------------------------------
+All of Your Upcoming Appointments:
+
+	    =============	     ========	 ============    ==============
+	     DESCRIPTION	       DATE	  START TIME        END TIME
+	    =============	     ========	 ============    ==============
+           Grandpa Visits           04/10/2018	    6:45 PM	    9:00 PM
+           Dad's Birthday           09/12/2019	    7:00 AM	    11:59 PM
+        Doctor's Appointment        09/12/2019	    7:00 PM	    8:30 PM
+         School Club Meeting        09/24/2019	    2:30 PM	    3:00 PM
+
+
+------------------------------------------------------------------------------------
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: print
+
+Would you like to print your Daily, Monthly, or Entire Schedule? (Enter "day", "month", or "entire")
+Enter: month
+
+Please enter the desired month and year (In the format "mm/yyyy")
+Enter: 111/2019
+Invalid function. Desired month and year must be entered in the format: "mm/yyyy" (ex: "04/2001" for April, 2001)
+Re-Enter: 09/2019
+
+
+------------------------------------------------------------------------------------
+SEPTEMBER Appointments
+	    =============	     ========	 ============    ==============
+	     DESCRIPTION	       DATE	  START TIME        END TIME
+	    =============	     ========	 ============    ==============
+           Dad's Birthday           09/12/2019	    7:00 AM	    11:59 PM
+        Doctor's Appointment        09/12/2019	    7:00 PM	    8:30 PM
+         School Club Meeting        09/24/2019	    2:30 PM	    3:00 PM
+
+
+------------------------------------------------------------------------------------
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: print
+
+Would you like to print your Daily, Monthly, or Entire Schedule? (Enter "day", "month", or "entire")
+Enter: day
+
+Enter the desired month/day/year (In the format "mm/dd/yyyy"): 09/12/2019
+
+------------------------------------------------------------------------------------
+09/12/2019 Appointments
+	    =============	     ========	 ============    ==============
+	     DESCRIPTION	       DATE	  START TIME        END TIME
+	    =============	     ========	 ============    ==============
+           Dad's Birthday           09/12/2019	    7:00 AM	    11:59 PM
+        Doctor's Appointment        09/12/2019	    7:00 PM	    8:30 PM
+
+
+------------------------------------------------------------------------------------
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: directions
+
+------------------------------------------------------------------------------------
+Welcome to Your Appointment Calendar!
+
+Available functions for you to use include:
+	1) Print your appointments (For one particular day, month, or all appointments you have)
+		* To print appointments, Enter: "print"
+	2) Add appointment
+		* To add appointment, Enter: "add"
+	3) Remove appointment
+		* To remove appointment, Enter: "remove"
+	4) Reread Directions
+		* To reread directions, Enter: "directions"
+	5) End Program
+		* To end program, Enter: "end"
+------------------------------------------------------------------------------------
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: edit
+
+Invalid function. Only functions are: "print", "add", "remove", "directions", "end"
+Re-Enter: print
+
+Would you like to print your Daily, Monthly, or Entire Schedule? (Enter "day", "month", or "entire")
+Enter: week
+
+Invalid function. Only functions are: "day", "month", "entire"
+Re-Enter: entire
+
+
+------------------------------------------------------------------------------------
+All of Your Upcoming Appointments:
+
+	    =============	     ========	 ============    ==============
+	     DESCRIPTION	       DATE	  START TIME        END TIME
+	    =============	     ========	 ============    ==============
+           Grandpa Visits           04/10/2018	    6:45 PM	    9:00 PM
+           Dad's Birthday           09/12/2019	    7:00 AM	    11:59 PM
+        Doctor's Appointment        09/12/2019	    7:00 PM	    8:30 PM
+         School Club Meeting        09/24/2019	    2:30 PM	    3:00 PM
+
+
+------------------------------------------------------------------------------------
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: add
+
+Enter appointment description (Max 30 characters): Meditation Session
+Enter appointment date (In the format "mm/dd/yyyy" for month, day, year): 003/20/2019
+Invalid input. Date must be entered as "mm/dd/yyyy" (ex: 10/12/2002)
+Re-Enter: 14/13/2018
+
+Invalid input. Date must be entered as "mm/dd/yyyy". Months must be numbers 1 - 12 and days must be 1 - 31.
+Re-Enter: 10/12/2019
+
+Enter appointment start time, in hour/minute of day (In format "hr:mm"): 10:00 AM
+Enter appointment end time, in hour/minute of day (In format "hr:mm"): 11:00 AM
+
+~~~ Appointment successfully added ~~~
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+What would you like to do? (print, add, remove, directions, end)
+Enter: end
+
+~~~ Program ended ~~~
+*/
