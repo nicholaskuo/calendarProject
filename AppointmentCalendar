@@ -1,0 +1,212 @@
+import java.util.ArrayList;
+
+public class AppointmentCalendar 
+{
+	// array with Date objects
+	private ArrayList<Date> schedule;
+
+	// constructors Calendar
+	public AppointmentCalendar ()
+	{
+		schedule = new ArrayList<Date>();
+	}
+
+	// method adds Date object to array
+	public void addDate (String desc, String date, String start, String end)
+	{
+		if (schedule.size() != 0)
+		{
+			// stores inputed date's month, day, and year
+			int index = -1;
+			int month = Integer.parseInt(date.substring(0, 2));
+			int day = Integer.parseInt(date.substring(3,5));
+			int year = Integer.parseInt(date.substring(6));
+
+			// finds index of Date objects according to chronological date order
+			int i = 0;
+			while(i < schedule.size() && index == -1)
+			{
+				String temp2 = String.valueOf(schedule.get(i).returnDate());
+				int month2 = Integer.parseInt(temp2.substring(0, 2));
+				int day2 = Integer.parseInt(temp2.substring(3,5));
+				int year2 = Integer.parseInt(temp2.substring(6));
+
+				if(year < year2)
+				{
+					index = i;
+				}
+				else if (year == year2)
+				{
+					if (month == month2)
+					{
+						if (day <= day2)
+							index = i;
+					}
+					else if (month < month2)
+						index = i;
+				}
+				i++;
+			}
+			
+			//adds object to array chronologically using found index
+			if (index != -1)
+			{
+				schedule.add(index, new Date(desc, date, start, end));
+			}
+			else
+			{
+				schedule.add(new Date(desc, date, start, end));
+			}
+		}
+		else
+			schedule.add(new Date(desc, date, start, end));
+		
+		System.out.println("\n~~~ Appointment successfully added ~~~");
+	}
+
+	// method removes Date object given its description
+	public void removeDate (String descrip)
+	{
+		// compares for Date object in array that has same description as parameter, deletes if found
+		boolean check = true;
+		for (int i = 0; i < schedule.size(); i++)
+		{
+			if(schedule.get(i).returnDesc().toLowerCase().equals(descrip.toLowerCase()))
+			{
+				schedule.remove(i);
+				i = schedule.size();
+				check = false;
+			}
+		}
+		
+		// prints whether operation removed or did not remove Date
+		if (!check)
+			System.out.println("\n~~~Appointment successfully removed~~~\n");
+		else
+		{
+			System.out.println("\n~~~Appointment not found~~~");
+			System.out.println("(If you do not know what appointments you have, use the function \"print\" and then \"entire\" to print entire schedule!)\n");
+		}
+	}
+
+	// method removes Date object given its description & date
+	public void removeDate (String description, String date)
+	{
+		// compares for Date object in array that has same description & date as parameter
+		boolean check = true;
+		for (int i = 0; i < schedule.size(); i++)
+		{
+			if (schedule.get(i).returnDesc().toLowerCase().equals(description.toLowerCase()));
+			{
+				if (schedule.get(i).returnDate().equals(date))
+				{
+					schedule.remove(i);
+					check = false;
+				}
+			}
+		}
+		// prints whether operation removed or did not remove Date
+		if (!check)
+			System.out.println("\n~~~Appointment successfully removed~~~\n");
+		else
+		{
+			System.out.println("\n~~~Appointment not found~~~");
+			System.out.println("(If you do not know what appointments you have, use the function \"print\" and then \"entire\" to print entire schedule!)\n");
+		}
+	}
+	
+	// method chronologically prints all Date objects in array
+	public void printEntireSched()
+	{
+		System.out.println("\n-------------------------------------------------------------------------------------------");
+		System.out.println("All of Your Upcoming Appointments:\n");
+		System.out.println("\t    =============\t     ========\t ============    ==============");
+		System.out.println("\t     DESCRIPTION\t       DATE\t  START TIME        END TIME");
+		System.out.println("\t    =============\t     ========\t ============    ==============");
+		for(int i = 0; i < schedule.size(); i++)
+		{
+			System.out.println(schedule.get(i));
+		}
+		System.out.println("\n\n-------------------------------------------------------------------------------------------");
+	}
+
+	// method chronologically prints all Date objects of a specific month & year
+	public void printMonthSched(String monthNum, String year)
+	{
+		System.out.println("\n-------------------------------------------------------------------------------------------");
+		System.out.println(findMonth(monthNum).toUpperCase() + " Appointments");
+		System.out.println("\t    =============\t     ========\t ============    ==============");
+		System.out.println("\t     DESCRIPTION\t       DATE\t  START TIME        END TIME");
+		System.out.println("\t    =============\t     ========\t ============    ==============");
+		for (int i = 0; i < schedule.size(); i++)
+		{
+			if (schedule.get(i).returnDate().substring(0,2).equals(monthNum))
+			{
+				if (schedule.get(i).returnDate().substring(6).equals(year))
+					System.out.println(schedule.get(i));
+			}
+		}
+		System.out.println("\n\n-------------------------------------------------------------------------------------------");
+	}
+
+	// method prints Date objects of specific date
+	public void printDaySched(String date)
+	{
+		System.out.println("\n-------------------------------------------------------------------------------------------");
+		System.out.println(date + " Appointments");
+		System.out.println("\t    =============\t     ========\t ============    ==============");
+		System.out.println("\t     DESCRIPTION\t       DATE\t  START TIME        END TIME");
+		System.out.println("\t    =============\t     ========\t ============    ==============");
+		for (int i = 0; i < schedule.size(); i++)
+		{
+			if (schedule.get(i).returnDate().equals(date))
+				System.out.println(schedule.get(i));
+		}
+		System.out.println("\n\n-------------------------------------------------------------------------------------------");
+	}
+
+	// returns true if parameter's description is repeated more than once in array
+	public boolean repeatedDescPresent(String desc)
+	{
+		int count = 0;
+		for(int i = 0; i < schedule.size(); i++)
+		{
+			if (schedule.get(i).returnDesc().toLowerCase().equals(desc.toLowerCase()))
+				count++;
+		}
+		if (count >= 2)
+			return true;
+		else
+			return false;
+	}
+
+	// converts a month's number into its name
+	private String findMonth(String month)
+	{
+		if(month.equals("01"))
+			return "January";
+		else if(month.equals("02"))
+			return "Febuary";
+		else if(month.equals("03"))
+			return "March";
+		else if(month.equals("04"))
+			return "April";
+		else if(month.equals("05"))
+			return "May";
+		else if(month.equals("06"))
+			return "June";
+		else if(month.equals("07"))
+			return "July";
+		else if(month.equals("08"))
+			return "August";
+		else if(month.equals("09"))
+			return "September";
+		else if(month.equals("10"))
+			return "October";
+		else if(month.equals("11"))
+			return "November";
+		else if(month.equals("12"))
+			return "December";
+		return "";
+	}
+}
